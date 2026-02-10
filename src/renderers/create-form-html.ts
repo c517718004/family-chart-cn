@@ -131,7 +131,6 @@ function fields(form_creator: EditDatumFormCreator | NewRelFormCreator) {
       <div class="f3-form-field">
         <label>${select_field.label}</label>
         <select name="${select_field.id}" value="${select_field.initial_value || ''}">
-          <option value="">${select_field.placeholder || `Select ${select_field.label}`}</option>
           ${select_field.options.map((option) => `<option ${option.value === select_field.initial_value ? 'selected' : ''} value="${option.value}">${option.label}</option>`).join('')}
         </select>
       </div>`
