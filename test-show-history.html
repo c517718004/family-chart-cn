@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Show History</title>
+    <style>
+        #FamilyChart {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            margin: 0 10px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Show History</h1>
+    <div class="controls">
+        <button id="showHistory">Show History</button>
+        <button id="hideHistory">Hide History</button>
+    </div>
+    <div id="FamilyChart"></div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="./dist/family-chart-cn.js"></script>
+    <script>
+        // Sample data
+        const data = [
+            {
+                id: "1",
+                "first name": "John",
+                "last name": "Doe",
+                birthday: "1980-01-01",
+                rels: [
+                    {
+                        type: "spouse",
+                        id: "2"
+                    },
+                    {
+                        type: "child",
+                        id: "3"
+                    }
+                ]
+            },
+            {
+                id: "2",
+                "first name": "Jane",
+                "last name": "Doe",
+                birthday: "1982-02-02",
+                rels: [
+                    {
+                        type: "spouse",
+                        id: "1"
+                    },
+                    {
+                        type: "child",
+                        id: "3"
+                    }
+                ]
+            },
+            {
+                id: "3",
+                "first name": "John Jr.",
+                "last name": "Doe",
+                birthday: "2005-03-03",
+                rels: [
+                    {
+                        type: "parent",
+                        id: "1"
+                    },
+                    {
+                        type: "parent",
+                        id: "2"
+                    }
+                ]
+            }
+        ];
+
+        // Create chart
+        const f3Chart = f3.createChart('#FamilyChart', data);
+        const f3EditTree = f3Chart.editTree()
+            .setFields(["first name", "last name", "birthday"])
+            .setOnChange(() => {
+                const updated_data = f3EditTree.exportData();
+                console.log('Data updated:', updated_data);
+            });
+
+        // Event listeners
+        document.getElementById('showHistory').addEventListener('click', () => {
+            f3EditTree.setShowHistory(true);
+            console.log('History shown');
+        });
+
+        document.getElementById('hideHistory').addEventListener('click', () => {
+            f3EditTree.setShowHistory(false);
+            console.log('History hidden');
+        });
+    </script>
+</body>
+</html>

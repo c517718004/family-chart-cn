@@ -187,7 +187,6 @@ function addLinkExistingRelative(form_creator: EditDatumFormCreator | NewRelForm
       <div class="f3-link-existing-relative">
         <label>${title}</label>
         <select>
-          <option value="">${select_placeholder}</option>
           ${options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
         </select>
       </div>

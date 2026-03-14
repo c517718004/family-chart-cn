@@ -1,7 +1,7 @@
 {
   "entryPoints": ["src/index.ts"],
   "out": "docs/api",
-  "name": "Family Chart API Documentation",
+  "name": "Family Chart API 文档",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": true,

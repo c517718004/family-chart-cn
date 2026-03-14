@@ -62,6 +62,7 @@ export class EditTree {
   postSubmit: ((datum: Datum, data: Data) => void) | null
   link_existing_rel_config?: FormCreatorSetupProps['link_existing_rel_config']
   onFormCreation: null | ((props: {cont: HTMLElement, form_creator: FormCreator}) => void)
+  showHistory: boolean
 
   addRelativeInstance: AddRelative
   removeRelativeInstance: RemoveRelative
@@ -101,6 +102,8 @@ export class EditTree {
     
     this.createFormEdit = null
     this.createFormNew = null
+  
+    this.showHistory = true
   
     this.formCont = this.getFormContDefault()
     this.modal = this.setupModal()
@@ -192,12 +195,21 @@ export class EditTree {
   private createHistory() {
     const history = createHistory(this.store, this._getStoreDataCopy.bind(this), historyUpdateTree.bind(this))
 
-    const nav_cont = this.cont.querySelector('.f3-nav-cont') as HTMLElement
-    if (!nav_cont) throw new Error("Nav cont not found")
-    const controls = createHistoryControls(nav_cont, history)
+    let controls: any = {
+      back_btn: null as any,
+      forward_btn: null as any,
+      updateButtons: () => {},
+      destroy: () => {}
+    }
 
-    history.changed()
-    controls.updateButtons()
+    if (this.showHistory) {
+      const nav_cont = this.cont.querySelector('.f3-nav-cont') as HTMLElement
+      if (!nav_cont) throw new Error("Nav cont not found")
+      controls = createHistoryControls(nav_cont, history)
+
+      history.changed()
+      controls.updateButtons()
+    }
   
     return {...history, controls}
   
@@ -206,7 +218,9 @@ export class EditTree {
       if (this.addRelativeInstance.is_active) this.addRelativeInstance.onCancel!()
       if (this.removeRelativeInstance.is_active) this.removeRelativeInstance.onCancel!()
       this.store.updateTree({initial: false})
-      this.history.controls.updateButtons()
+      if (this.showHistory) {
+        this.history.controls.updateButtons()
+      }
       this.openFormWithId(this.store.getMainDatum()?.id)
       if (this.onChange) this.onChange()
     }
@@ -530,6 +544,37 @@ export class EditTree {
   
   setOnDelete(onDelete: EditTree['onDelete']) {
     this.onDelete = onDelete
+    return this
+  }
+  
+  /**
+   * Set whether to show history controls
+   * @param show - Whether to show history controls
+   * @returns EditTree instance for method chaining
+   */
+  setShowHistory(show: boolean) {
+    this.showHistory = show
+    
+    // Destroy existing history controls
+    this.history.controls.destroy()
+    
+    // Recreate history controls if showHistory is true
+    if (show) {
+      const nav_cont = this.cont.querySelector('.f3-nav-cont') as HTMLElement
+      if (!nav_cont) throw new Error("Nav cont not found")
+      this.history.controls = createHistoryControls(nav_cont, this.history)
+      this.history.changed()
+      this.history.controls.updateButtons()
+    } else {
+      // Create empty controls with all required properties
+      this.history.controls = {
+        back_btn: null as any,
+        forward_btn: null as any,
+        updateButtons: () => {},
+        destroy: () => {}
+      }
+    }
+    
     return this
   }
   
