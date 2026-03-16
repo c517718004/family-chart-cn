@@ -53,6 +53,8 @@ export class Chart {
   afterUpdate: Function | null
 
   editTreeInstance: EditTree | null
+  backgroundColor: string | null
+  linkColor: string | null
 
 
   constructor(cont: HTMLElement | string, data: Data) {
@@ -66,6 +68,8 @@ export class Chart {
     this.beforeUpdate = null
     this.afterUpdate = null
     
+    this.backgroundColor = null
+    this.linkColor = null
 
     this.cont = setCont(cont)
     const {svg} = htmlContSetup(this.cont)
@@ -96,6 +100,8 @@ export class Chart {
       if (this.beforeUpdate) this.beforeUpdate(props)
       props = Object.assign({transition_time: this.store.state.transition_time}, props || {})
       if (this.is_card_html) props = Object.assign({}, props || {}, {cardHtml: true})
+      if (this.backgroundColor) props = Object.assign({}, props || {}, {backgroundColor: this.backgroundColor})
+      if (this.linkColor) props = Object.assign({}, props || {}, {linkColor: this.linkColor})
       view(this.store.getTree()!, this.svg, this.getCard!(), props || {})
       if (this.linkSpouseText) linkSpouseText(this.svg, this.store.getTree()!, Object.assign({}, props || {}, {linkSpouseText: this.linkSpouseText, node_separation: this.store.state.node_separation!}))
       if (this.afterUpdate) this.afterUpdate(props)
@@ -219,7 +225,33 @@ export class Chart {
    */
   setLinkSpouseText(linkSpouseText: LinkSpouseText) {
     this.linkSpouseText = linkSpouseText
+
+    return this
+  }
   
+  /**
+   * Set the background color of the chart
+   * @param color - The background color to use
+   * @returns Chart instance for method chaining
+   */
+  setBackgroundColor(color: string) {
+    this.backgroundColor = color
+    // Set the background color of the f3Canvas element
+    const f3Canvas = this.cont.querySelector('#f3Canvas') as HTMLElement
+    if (f3Canvas) {
+      f3Canvas.style.backgroundColor = color
+    }
+    return this
+  }
+  
+  /**
+   * Set the color of the links between nodes
+   * @param color - The link color to use
+   * @returns Chart instance for method chaining
+   */
+  setLinkColor(color: string) {
+    this.linkColor = color
+    this.store.updateTree({})
     return this
   }
 

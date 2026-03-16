@@ -14,6 +14,8 @@ export interface ViewProps {
   cardHtmlDiv?: HTMLElement
   tree_position?: 'fit' | 'main_to_middle' | 'inherit'
   scale?: number
+  backgroundColor?: string
+  linkColor?: string
 }
 
 export default function(tree: Tree, svg: SVGElement, Card: any, props: ViewProps = {}) {
