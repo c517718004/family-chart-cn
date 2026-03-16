@@ -63,6 +63,7 @@ export class EditTree {
   link_existing_rel_config?: FormCreatorSetupProps['link_existing_rel_config']
   onFormCreation: null | ((props: {cont: HTMLElement, form_creator: FormCreator}) => void)
   showHistory: boolean
+  canAddSpouse: boolean
 
   addRelativeInstance: AddRelative
   removeRelativeInstance: RemoveRelative
@@ -104,6 +105,7 @@ export class EditTree {
     this.createFormNew = null
   
     this.showHistory = true
+    this.canAddSpouse = true
   
     this.formCont = this.getFormContDefault()
     this.modal = this.setupModal()
@@ -159,7 +161,18 @@ export class EditTree {
   }
 
   private setupAddRelative() {
-    return addRelative(this.store, () => onActivate(this), (datum: Datum) => cancelCallback(this, datum))
+	const addRelativeInstance = addRelative(this.store, () => onActivate(this), (datum: Datum) => cancelCallback(this, datum))
+	// console.log('setupAddRelative addRelativeInstance',addRelativeInstance)
+	// Set canAdd function to control whether spouse can be added
+	addRelativeInstance.canAdd = (datum: any) => {
+	  return {
+	    parent: true,
+	    spouse: this.canAddSpouse,
+	    child: true
+	  }
+	}
+	
+	return addRelativeInstance
   
     function onActivate(self: EditTree) {
       if (self.removeRelativeInstance.is_active) self.removeRelativeInstance.onCancel!()
@@ -572,6 +585,26 @@ export class EditTree {
         forward_btn: null as any,
         updateButtons: () => {},
         destroy: () => {}
+      }
+    }
+    
+    return this
+  }
+  
+  /**
+   * Set whether to allow adding spouse
+   * @param canAdd - Whether to allow adding spouse
+   * @returns EditTree instance for method chaining
+   */
+  setCanAddSpouse(canAdd: boolean) {
+    this.canAddSpouse = canAdd
+    
+    // Update canAdd function for addRelative instance
+    this.addRelativeInstance.canAdd = (datum: any) => {
+      return {
+        parent: true,
+        spouse: this.canAddSpouse,
+        child: true
       }
     }
     
